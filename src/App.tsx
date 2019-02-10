@@ -6,23 +6,64 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+
+        <TodoHeaderSection />
+
+        <TodoItem text='foo 1' />
+        <TodoItem text='foo 1' />
+        <TodoItem text='foo 1' />
+        <TodoItem text='foo 1' />
+
+        <TodoFooterSection />
+
       </div>
     );
   }
 }
+
+
+class TodoHeaderSection extends Component {
+  render(){
+    return (
+        <div className='todo-header-section'>
+          <span>\/</span>
+          <input placeholder='What needs to be done?'></input>
+        </div>
+    )
+  }
+}
+
+
+interface TodoItemProps {
+  text: string
+}
+
+class TodoItem extends Component<TodoItemProps> {
+  render(){
+    return (
+        <div className='todo-item'>
+          <input type='checkbox' />
+          <span> {this.props.text} </span>
+        </div>
+    )
+  }
+}
+
+
+class TodoFooterSection extends Component {
+  render(){
+    return (
+        <div className='todo-footer-section'>
+          <span>n items</span>
+
+          <span>All</span>
+          <span>Active</span>
+          <span>Completed</span>
+        </div>
+    )
+  }
+}
+
+
 
 export default App;
