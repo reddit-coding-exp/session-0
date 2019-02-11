@@ -1,6 +1,16 @@
-import React, { Component, ChangeEvent, KeyboardEvent } from "react";
+import React, {
+  Component,
+  ChangeEvent,
+  KeyboardEvent,
+  Ref,
+  RefObject
+} from "react";
 import logo from "./logo.svg";
 import "./App.css";
+
+function generateId() {
+  return String(Math.floor(Math.random() * 10000000));
+}
 
 interface TodoItemData {
   id: string;
@@ -23,24 +33,13 @@ class App extends Component<AppProps, TodoList> {
     super(props);
     this.state = {
       currentText: "",
-      todoItems: [
-        {
-          id: "hard-coded-1",
-          text: "foo bar",
-          selected: false
-        },
-        {
-          id: "hard-coded-2",
-          text: "foo bar 2",
-          selected: false
-        }
-      ]
+      todoItems: []
     };
   }
 
   renderTodoItems = () => {
     return this.state.todoItems.map(todoItem => {
-      return <TodoItem text={todoItem.text} />;
+      return <TodoItem key={todoItem.id} text={todoItem.text} />;
     });
   };
 
@@ -50,7 +49,7 @@ class App extends Component<AppProps, TodoList> {
 
   onHeaderTextAccepted = () => {
     const newTodoItem: TodoItemData = {
-      id: "hardcoded-id-for-new-items",
+      id: generateId(),
       text: this.state.currentText,
       selected: false
     };
@@ -62,16 +61,20 @@ class App extends Component<AppProps, TodoList> {
 
   render() {
     return (
-      <div className="App">
-        <TodoHeaderSection
-          currentText={this.state.currentText}
-          onEnterPressed={this.onHeaderTextAccepted}
-          onChange={this.onHeaderCurrentTextChange}
-        />
+      <div className="todo-list">
+        <div className="todo-list-container">
+          <TodoHeaderSection
+            currentText={this.state.currentText}
+            onEnterPressed={this.onHeaderTextAccepted}
+            onChange={this.onHeaderCurrentTextChange}
+          />
 
-        {this.renderTodoItems()}
+          <div className="todo-items-section todo-section">
+            {this.renderTodoItems()}
+          </div>
 
-        <TodoFooterSection />
+          <TodoFooterSection />
+        </div>
       </div>
     );
   }
@@ -84,17 +87,31 @@ interface TodoHeaderSectionProps {
 }
 
 class TodoHeaderSection extends Component<TodoHeaderSectionProps> {
+  inputRef: RefObject<HTMLInputElement>;
+
+  constructor(props: TodoHeaderSectionProps) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
   handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       this.props.onEnterPressed();
     }
   };
 
+  componentDidMount() {
+    this.inputRef.current && this.inputRef.current.focus();
+  }
+
   render() {
     return (
-      <div className="todo-header-section">
-        <span>\/</span>
+      <div className="todo-header-section todo-section">
+        <label className="toggle-all-label" htmlFor="todo-input">❯</label>
         <input
+          className='todo-input'
+          name="todo-input"
+          ref={this.inputRef}
           onChange={this.props.onChange}
           placeholder="What needs to be done?"
           value={this.props.currentText}
@@ -123,7 +140,7 @@ class TodoItem extends Component<TodoItemProps> {
 class TodoFooterSection extends Component {
   render() {
     return (
-      <div className="todo-footer-section">
+      <div className="todo-footer-section todo-section">
         <span>n items</span>
 
         <span>All</span>

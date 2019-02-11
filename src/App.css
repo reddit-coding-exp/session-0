@@ -1,5 +1,37 @@
-.App {
-  text-align: center;
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.todo-list-container {
+  width: 600px;
+}
+
+.todo-section {
+  width: 600px;
+}
+
+.todo-items-section {
+  width: 600px;
+}
+
+.toggle-all-label {
+  transform: rotate(90deg);
+  font-size: 22px;
+  color: #e6e6e6;
+  padding: 20px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.todo-header-section {
+
+}
+
+.todo-input {
+  flex: 1;
+  border-style: none;
 }
 
 .App-logo {
