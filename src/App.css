@@ -77,13 +77,30 @@ body{
 }
 
 .todo-filter-selection.active {
-
+  border-style: solid;
+  border-width: 1px;
+  border-color: #888;
 }
 
 .todo-filter-selection {
   justify-self: flex-end;
 }
 
+.todo-item-section {
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #ddd;
+
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  position: relative;
+}
+
+.todo-item {
+  padding: 20px;
+  font-size: 1.8em;
+}
 
 .todo-input {
   flex: 1;

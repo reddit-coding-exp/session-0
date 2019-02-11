@@ -156,10 +156,10 @@ interface TodoItemProps {
 class TodoItem extends Component<TodoItemProps> {
   render() {
     return (
-      <div className="todo-item">
+      <span className="todo-item">
         <input type="checkbox" />
         <span> {this.props.text} </span>
-      </div>
+      </span>
     );
   }
 }
