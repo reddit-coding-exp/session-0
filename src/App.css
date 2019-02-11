@@ -1,5 +1,110 @@
-.App {
-  text-align: center;
+body{ 
+  padding: 40px;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 600px;
+  box-shadow: 4px 4px 10px 1px #ccc;
+
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ddd;
+}
+
+.todo-list-item {
+}
+
+.todo-list-container {
+}
+
+.todo-section {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  align-items: center;
+
+}
+
+.todo-list-container {
+  width: 600px;
+}
+
+.toggle-all-label {
+  transform: rotate(90deg);
+  font-size: 22px;
+  color: #e6e6e6;
+  padding: 20px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.todo-header-section {
+  width: 600px;
+}
+
+.todo-footer-section {
+  font-size: .8em;
+  padding: 5px;
+
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #ddd;
+}
+
+
+.todo-footer-section span {
+  opacity: .6;
+}
+
+.todo-item-count {
+  position: absolute;
+  left: 20px;
+}
+
+.todo-filter-selection {
+  margin: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.todo-filter-selection.active {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #888;
+}
+
+.todo-filter-selection {
+  justify-self: flex-end;
+}
+
+.todo-item-section {
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #ddd;
+
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  position: relative;
+}
+
+.todo-item {
+  padding: 20px;
+  font-size: 1.8em;
+}
+
+.todo-input {
+  flex: 1;
+  border-style: none;
 }
 
 .App-logo {

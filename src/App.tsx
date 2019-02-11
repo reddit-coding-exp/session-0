@@ -1,6 +1,18 @@
-import React, { Component, ChangeEvent, KeyboardEvent } from "react";
+import React, {
+  Component,
+  ChangeEvent,
+  KeyboardEvent,
+  Ref,
+  RefObject
+} from "react";
 import logo from "./logo.svg";
 import "./App.css";
+
+function generateId() {
+  return String(Math.floor(Math.random() * 10000000));
+}
+
+type TodoFilter = "all" | "active" | "completed";
 
 interface TodoItemData {
   id: string;
@@ -12,7 +24,7 @@ interface TodoItemData {
 
 interface TodoList {
   currentText: string;
-
+  activeFilter: TodoFilter;
   todoItems: TodoItemData[];
 }
 
@@ -23,24 +35,14 @@ class App extends Component<AppProps, TodoList> {
     super(props);
     this.state = {
       currentText: "",
-      todoItems: [
-        {
-          id: "hard-coded-1",
-          text: "foo bar",
-          selected: false
-        },
-        {
-          id: "hard-coded-2",
-          text: "foo bar 2",
-          selected: false
-        }
-      ]
+      todoItems: [],
+      activeFilter: "all"
     };
   }
 
   renderTodoItems = () => {
     return this.state.todoItems.map(todoItem => {
-      return <TodoItem text={todoItem.text} />;
+      return <TodoItem key={todoItem.id} text={todoItem.text} />;
     });
   };
 
@@ -50,7 +52,7 @@ class App extends Component<AppProps, TodoList> {
 
   onHeaderTextAccepted = () => {
     const newTodoItem: TodoItemData = {
-      id: "hardcoded-id-for-new-items",
+      id: generateId(),
       text: this.state.currentText,
       selected: false
     };
@@ -60,18 +62,49 @@ class App extends Component<AppProps, TodoList> {
     this.setState({ todoItems: newTodoItemArray, currentText: "" });
   };
 
+  renderItems = () => {
+    if (this.state.todoItems.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="todo-item-section todo-section">
+        {this.renderTodoItems()}
+      </div>
+    );
+  };
+
+  onFilterClicked = (activeFilter: TodoFilter) => {
+    this.setState({ activeFilter });
+  };
+
+  renderFooter = () => {
+    if (this.state.todoItems.length === 0) {
+      return null;
+    }
+
+    return (
+      <TodoFooterSection
+        onFilterClicked={this.onFilterClicked}
+        filterSelection={this.state.activeFilter}
+        todoCount={this.state.todoItems.length}
+      />
+    );
+  };
+
   render() {
     return (
-      <div className="App">
-        <TodoHeaderSection
-          currentText={this.state.currentText}
-          onEnterPressed={this.onHeaderTextAccepted}
-          onChange={this.onHeaderCurrentTextChange}
-        />
+      <div className="todo-list">
+        <div className="todo-list-container">
+          <TodoHeaderSection
+            currentText={this.state.currentText}
+            onEnterPressed={this.onHeaderTextAccepted}
+            onChange={this.onHeaderCurrentTextChange}
+          />
 
-        {this.renderTodoItems()}
-
-        <TodoFooterSection />
+          {this.renderItems()}
+          {this.renderFooter()}
+        </div>
       </div>
     );
   }
@@ -84,17 +117,33 @@ interface TodoHeaderSectionProps {
 }
 
 class TodoHeaderSection extends Component<TodoHeaderSectionProps> {
+  inputRef: RefObject<HTMLInputElement>;
+
+  constructor(props: TodoHeaderSectionProps) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
   handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       this.props.onEnterPressed();
     }
   };
 
+  componentDidMount() {
+    this.inputRef.current && this.inputRef.current.focus();
+  }
+
   render() {
     return (
-      <div className="todo-header-section">
-        <span>\/</span>
+      <div className="todo-header-section todo-section">
+        <label className="toggle-all-label" htmlFor="todo-input">
+          ❯
+        </label>
         <input
+          className="todo-input"
+          name="todo-input"
+          ref={this.inputRef}
           onChange={this.props.onChange}
           placeholder="What needs to be done?"
           value={this.props.currentText}
@@ -112,23 +161,54 @@ interface TodoItemProps {
 class TodoItem extends Component<TodoItemProps> {
   render() {
     return (
-      <div className="todo-item">
+      <span className="todo-item">
         <input type="checkbox" />
         <span> {this.props.text} </span>
-      </div>
+      </span>
     );
   }
 }
 
-class TodoFooterSection extends Component {
+interface TodoFooterSectionProps {
+  todoCount: number;
+
+  filterSelection: TodoFilter;
+
+  onFilterClicked(filter: TodoFilter): void;
+}
+
+class TodoFooterSection extends Component<TodoFooterSectionProps> {
+  calculateClassName = (labelFor: TodoFilter) => {
+    return `todo-filter-selection ${
+      labelFor === this.props.filterSelection ? "active" : ""
+    }`;
+  };
+
   render() {
     return (
-      <div className="todo-footer-section">
-        <span>n items</span>
+      <div className="todo-footer-section todo-section">
+        <span className="todo-item-count">{this.props.todoCount} items</span>
 
-        <span>All</span>
-        <span>Active</span>
-        <span>Completed</span>
+        <span className="todo-filter-selection">
+          <span
+            className={this.calculateClassName("all")}
+            onClick={() => this.props.onFilterClicked("all")}
+          >
+            All
+          </span>
+          <span
+            className={this.calculateClassName("active")}
+            onClick={() => this.props.onFilterClicked("active")}
+          >
+            Active
+          </span>
+          <span
+            className={this.calculateClassName("completed")}
+            onClick={() => this.props.onFilterClicked("completed")}
+          >
+            Completed
+          </span>
+        </span>
       </div>
     );
   }
