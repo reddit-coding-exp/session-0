@@ -12,6 +12,8 @@ function generateId() {
   return String(Math.floor(Math.random() * 10000000));
 }
 
+type TodoFilter = "all" | "active" | "completed";
+
 interface TodoItemData {
   id: string;
 
@@ -22,7 +24,7 @@ interface TodoItemData {
 
 interface TodoList {
   currentText: string;
-
+  activeFilter: TodoFilter;
   todoItems: TodoItemData[];
 }
 
@@ -33,7 +35,8 @@ class App extends Component<AppProps, TodoList> {
     super(props);
     this.state = {
       currentText: "",
-      todoItems: []
+      todoItems: [],
+      activeFilter: "all"
     };
   }
 
@@ -59,6 +62,31 @@ class App extends Component<AppProps, TodoList> {
     this.setState({ todoItems: newTodoItemArray, currentText: "" });
   };
 
+  renderItems = () => {
+    if (this.state.todoItems.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="todo-item-section todo-section">
+        {this.renderTodoItems()}
+      </div>
+    );
+  };
+
+  renderFooter = () => {
+    if (this.state.todoItems.length === 0) {
+      return null;
+    }
+
+    return (
+      <TodoFooterSection
+        filterSelection={this.state.activeFilter}
+        todoCount={this.state.todoItems.length}
+      />
+    );
+  };
+
   render() {
     return (
       <div className="todo-list">
@@ -69,11 +97,8 @@ class App extends Component<AppProps, TodoList> {
             onChange={this.onHeaderCurrentTextChange}
           />
 
-          <div className="todo-items-section todo-section">
-            {this.renderTodoItems()}
-          </div>
-
-          <TodoFooterSection />
+          {this.renderItems()}
+          {this.renderFooter()}
         </div>
       </div>
     );
@@ -107,9 +132,11 @@ class TodoHeaderSection extends Component<TodoHeaderSectionProps> {
   render() {
     return (
       <div className="todo-header-section todo-section">
-        <label className="toggle-all-label" htmlFor="todo-input">❯</label>
+        <label className="toggle-all-label" htmlFor="todo-input">
+          ❯
+        </label>
         <input
-          className='todo-input'
+          className="todo-input"
           name="todo-input"
           ref={this.inputRef}
           onChange={this.props.onChange}
@@ -137,15 +164,31 @@ class TodoItem extends Component<TodoItemProps> {
   }
 }
 
-class TodoFooterSection extends Component {
+interface TodoFooterSectionProps {
+  todoCount: number;
+
+  filterSelection: TodoFilter;
+}
+
+class TodoFooterSection extends Component<TodoFooterSectionProps> {
+  calculateClassName = (labelFor: TodoFilter) => {
+    return `todo-filter-selection ${
+      labelFor === this.props.filterSelection ? "active" : ""
+    }`;
+  };
+
   render() {
     return (
       <div className="todo-footer-section todo-section">
-        <span>n items</span>
+        <span className="todo-item-count">{this.props.todoCount} items</span>
 
-        <span>All</span>
-        <span>Active</span>
-        <span>Completed</span>
+        <span className="todo-filter-selection">
+          <span className={this.calculateClassName("all")}>All</span>
+          <span className={this.calculateClassName("active")}>Active</span>
+          <span className={this.calculateClassName("completed")}>
+            Completed
+          </span>
+        </span>
       </div>
     );
   }
