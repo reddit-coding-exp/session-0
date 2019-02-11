@@ -74,6 +74,10 @@ class App extends Component<AppProps, TodoList> {
     );
   };
 
+  onFilterClicked = (activeFilter: TodoFilter) => {
+    this.setState({ activeFilter });
+  };
+
   renderFooter = () => {
     if (this.state.todoItems.length === 0) {
       return null;
@@ -81,6 +85,7 @@ class App extends Component<AppProps, TodoList> {
 
     return (
       <TodoFooterSection
+        onFilterClicked={this.onFilterClicked}
         filterSelection={this.state.activeFilter}
         todoCount={this.state.todoItems.length}
       />
@@ -168,6 +173,8 @@ interface TodoFooterSectionProps {
   todoCount: number;
 
   filterSelection: TodoFilter;
+
+  onFilterClicked(filter: TodoFilter): void;
 }
 
 class TodoFooterSection extends Component<TodoFooterSectionProps> {
@@ -183,9 +190,22 @@ class TodoFooterSection extends Component<TodoFooterSectionProps> {
         <span className="todo-item-count">{this.props.todoCount} items</span>
 
         <span className="todo-filter-selection">
-          <span className={this.calculateClassName("all")}>All</span>
-          <span className={this.calculateClassName("active")}>Active</span>
-          <span className={this.calculateClassName("completed")}>
+          <span
+            className={this.calculateClassName("all")}
+            onClick={() => this.props.onFilterClicked("all")}
+          >
+            All
+          </span>
+          <span
+            className={this.calculateClassName("active")}
+            onClick={() => this.props.onFilterClicked("active")}
+          >
+            Active
+          </span>
+          <span
+            className={this.calculateClassName("completed")}
+            onClick={() => this.props.onFilterClicked("completed")}
+          >
             Completed
           </span>
         </span>
