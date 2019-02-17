@@ -12,6 +12,8 @@ function generateId() {
   return String(Math.floor(Math.random() * 10000000));
 }
 
+const storageKey = "todoAppKey";
+
 type TodoFilter = "all" | "active" | "completed";
 
 interface TodoItemData {
@@ -34,12 +36,24 @@ interface AppProps {}
 class App extends Component<AppProps, TodoList> {
   constructor(props: AppProps) {
     super(props);
-    this.state = {
-      currentText: "",
-      todoItems: [],
-      activeFilter: "all",
-      completedState: {}
-    };
+
+    const persistedState = localStorage.getItem(storageKey);
+
+    if (persistedState === null) {
+      this.state = {
+        currentText: "",
+        todoItems: [],
+        activeFilter: "all",
+        completedState: {}
+      };
+    } else {
+      this.state = JSON.parse(persistedState)
+    }
+  }
+
+  shouldComponentUpdate(nextProps: AppProps, nextState: TodoList) {
+    localStorage.setItem(storageKey, JSON.stringify(this.state));
+    return true;
   }
 
   onTodoItemStateChange = (event: TodoItemChangeEvent) => {
