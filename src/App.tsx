@@ -26,6 +26,7 @@ interface TodoList {
   currentText: string;
   activeFilter: TodoFilter;
   todoItems: TodoItemData[];
+  completedState: Record<string, boolean | undefined>;
 }
 
 interface AppProps {}
@@ -36,13 +37,51 @@ class App extends Component<AppProps, TodoList> {
     this.state = {
       currentText: "",
       todoItems: [],
-      activeFilter: "all"
+      activeFilter: "all",
+      completedState: {}
     };
   }
 
+  onTodoItemStateChange = (event: TodoItemChangeEvent) => {
+    this.setState({
+      completedState: {
+        ...this.state.completedState,
+        [event.id]: event.completed
+      }
+    });
+  };
+
+  getFilteredTodoItems = () => {
+    return this.state.todoItems.filter(todoItem => {
+      const isChecked = this.state.completedState[todoItem.id];
+      if (this.state.activeFilter === "active") {
+        if (isChecked === true) {
+          return false;
+        } else {
+          return true;
+        }
+      } else if (this.state.activeFilter === "completed") {
+        if (isChecked === true) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
   renderTodoItems = () => {
-    return this.state.todoItems.map(todoItem => {
-      return <TodoItem key={todoItem.id} text={todoItem.text} />;
+    return this.getFilteredTodoItems().map(todoItem => {
+      return (
+        <TodoItem
+          completed={!!this.state.completedState[todoItem.id]}
+          onStateToggle={this.onTodoItemStateChange}
+          key={todoItem.id}
+          todoItem={todoItem}
+        />
+      );
     });
   };
 
@@ -87,7 +126,7 @@ class App extends Component<AppProps, TodoList> {
       <TodoFooterSection
         onFilterClicked={this.onFilterClicked}
         filterSelection={this.state.activeFilter}
-        todoCount={this.state.todoItems.length}
+        todoCount={this.getFilteredTodoItems().length}
       />
     );
   };
@@ -154,16 +193,34 @@ class TodoHeaderSection extends Component<TodoHeaderSectionProps> {
   }
 }
 
+interface TodoItemChangeEvent {
+  completed: boolean;
+  id: string;
+}
+
 interface TodoItemProps {
-  text: string;
+  todoItem: TodoItemData;
+  completed: boolean;
+  onStateToggle(event: TodoItemChangeEvent): void;
 }
 
 class TodoItem extends Component<TodoItemProps> {
+  onCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.props.onStateToggle({
+      id: this.props.todoItem.id,
+      completed: event.target.checked
+    });
+  };
+
   render() {
     return (
       <span className="todo-item">
-        <input type="checkbox" />
-        <span> {this.props.text} </span>
+        <input
+          checked={this.props.completed}
+          onChange={this.onCheckboxChange}
+          type="checkbox"
+        />
+        <span> {this.props.todoItem.text} </span>
       </span>
     );
   }
