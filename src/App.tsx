@@ -111,8 +111,9 @@ class App extends Component<AppProps, TodoList> {
     };
 
     const newTodoItemArray = [...this.state.todoItems, newTodoItem];
+    const sortedItems = bubbleSort(newTodoItemArray)
 
-    this.setState({ todoItems: newTodoItemArray, currentText: "" });
+    this.setState({ todoItems: sortedItems, currentText: "" });
   };
 
   renderItems = () => {
@@ -286,3 +287,40 @@ class TodoFooterSection extends Component<TodoFooterSectionProps> {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+// Create our own bubble sort
+
+function bubbleSort(numbersToSort: TodoItemData[]){
+  const copiedNumbers = [...numbersToSort]
+
+  for(let i = 0; i < copiedNumbers.length; i++){
+
+    for(let j = 0; j < copiedNumbers.length - 1; j++){
+      const n1 = copiedNumbers[j]
+      const n2 = copiedNumbers[j+1]
+
+      if ( n1.text <= n2.text){
+        continue
+      } else {
+        copiedNumbers[j] = n2
+        copiedNumbers[j + 1] = n1
+      }
+    }
+
+  }
+
+  return copiedNumbers
+}
+
+
+
+
+
+
